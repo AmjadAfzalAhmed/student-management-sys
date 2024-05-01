@@ -4,8 +4,8 @@ import chalk from "chalk";
 let studentIDCounter = 1;
 
 function generateStudentID() {
-  const prefix = "STU";
-  const studentID = prefix + studentIDCounter.toString().padStart(4, "0");
+  const prefix = "student";
+  const studentID = prefix + studentIDCounter.toString().padStart(5, "0");
   studentIDCounter++;
   return studentID;
 }
@@ -17,7 +17,6 @@ const studentDataBase: any = [];
 async function addStudent() {
   let answers = await inquirer.prompt([
     { type: "input", name: "name", message: "Enter student name:" },
-    { type: "number", name: "age", message: "Enter student age:" },
     { type: "input", name: "fName", message: "Enter father name:" },
     {
         name: 'enrol',
@@ -27,48 +26,75 @@ async function addStudent() {
       }
     
   ]);
+  let studentName = answers.name
+  let fName = answers.fName
+  let course = answers.enrol
+
   let courseFee = 0;
   if(answers.enrol === 'Typescript'){
     courseFee = 5000;
-     
+    console.log(chalk.yellow.italic(`\t\nThe course fee for Typescript is Rs. ${5000} To enrol in the selected course, you must pay the fee first!.\n`));
   }else if(answers.enrol === 'Python'){
     courseFee = 10000;
+    console.log(chalk.greenBright.italic(`\t\nThe course fee for Python is Rs. ${10000} To enrol in the selected course, you must pay the fee first!.\n`));
   }else if(answers.enrol === 'ReactJS'){
     courseFee = 8000;
+    console.log(chalk.blueBright.italic(`\t\nThe course fee for ReactJS is Rs. ${8000} To enrol in the selected course, you must pay the fee first!.\n`));
   }else if(answers.enrol === 'TailwindCss'){
     courseFee = 6000;
-  }else{
-    
+    console.log(chalk.redBright.italic(`\t\nThe course fee for TailwindCss is Rs. ${6000} To enrol in the selected course, you must pay the fee first!.\n`));
   }
+    answers = await inquirer.prompt(
+      {
+        name:'paymentMethod',
+        message: 'please select payment method below:',
+        type: 'list',
+        choices: ['Easy Paisa','JazzCash','Bank Transfer']
+      },
+    )
+    while(answers.paymentMethod){
+      answers = await inquirer.prompt(
+        {
+          name: 'payment',
+          message: 'Enter the fee amount',
+          type: 'input'
+        }
+      )
+        const feePayment:any = parseFloat(answers.payment)
 
-  let isFeePaid = await inquirer.prompt(
-    {
-        name: 'feePayment',
-        type: 'confirm'
-    }
-  )
-let confirmation = isFeePaid.feePayment
-if (confirmation == true){
+        if(feePayment === 5000){
+          console.log('\t\nYou have successfully been enrolled in Typescript Course\n');
+        }else if(feePayment ===10000){
+          console.log('\t\nYou have successfully been enrolled in Python Course\n');
+        }else if(feePayment === 8000){
+          console.log('\t\nYou have successfully been enrolled in ReactJS Course\n')
+        }else if(feePayment === 6000){
+          console.log('\t\nYou have successfully been enrolled in TailwindCss course\n')
+        }else{
+         console.log('\t\nYou must clear the fee to be enrolled in Typescript Course\n')
+       }
+    
+
+let confirmation = feePayment
+if (confirmation === 5000 || 10000 ||8000 || 6000 ){
     confirmation = 'O.K'
-}else if(confirmation == false){
+}else {
     confirmation = 'Fees is yet to be paid'
 }
 
   const studentID = generateStudentID();
   studentDataBase.push({
-    Name: answers.name,
-    Age: answers.age,
-    FName: answers.fName,
-    // Class: answers.class,
-    Course: answers.enrol,
+    Name: studentName,
+    FName: fName,
+    Course:course,
     UniqueId: studentID,
-    Fee: courseFee,
+    FeePaid: courseFee,
     FeeStatus: confirmation
   });
-}
+}}
 console.log(
-  chalk.blueBright.bold(
-    "\n---***---Welcome to the student management system!---***---\n"
+  chalk.greenBright.bold(
+    "\t\n---***---Welcome to the student management system!---***---\n"
   )
 );
 await addStudent();
@@ -88,12 +114,12 @@ while (true) {
   } else {
     console.log(
       chalk.yellowBright.bold(
-        "\n---***---Thanx for using Student Management System---***---\n"
+        "\t\n---***---Thanx for using Student Management System---***---\n"
       )
     );
     console.log(
       chalk.blueBright.bold(
-        "\n*-*-*-* Status *-*-*-*\n"
+        "\n*-*-*-* Final Status *-*-*-*\n"
       )
     );
     console.log(studentDataBase);
